@@ -2,116 +2,291 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MiniPOS Scanner - Multi Price</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniPOS Scanner Pro - Multi Price</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
-        :root { --bg: #f8fafc; --primary: #1e40af; --accent: #3b82f6; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .container { background: white; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; border: 1px solid #e2e8f0; }
-        .status { font-size: 0.75rem; padding: 5px 15px; border-radius: 50px; display: inline-block; margin-bottom: 1rem; font-weight: bold; }
-        .online { background: #dcfce7; color: #166534; }
-        input { width: 100%; padding: 15px; border: 2px solid #cbd5e1; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; transition: all 0.3s; }
-        input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
-        
-        .result-box { margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid #f1f5f9; }
-        .item-title { font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem; }
-        
-        /* Grid untuk Harga */
-        .price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 1rem; }
-        .price-card { background: #f1f5f9; padding: 10px; border-radius: 10px; text-align: center; }
-        .price-label { font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold; }
-        .price-value { font-size: 1.25rem; font-weight: 700; color: var(--primary); }
-        .main-price { grid-column: span 2; background: #eff6ff; border: 1px solid #bfdbfe; }
-        .main-price .price-value { font-size: 2.5rem; color: #2563eb; }
+        :root {
+            --bg: #f1f5f9;
+            --white: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --primary: #2563eb; /* Biru Utama */
+            --accent: #dbeade; /* Hijau Muda untuk Status */
+            --border: #e2e8f0;
+        }
 
-        .sku-tag { display: inline-block; margin-top: 1.5rem; font-family: monospace; font-size: 0.8rem; color: #94a3b8; background: #f8fafc; padding: 2px 8px; border-radius: 4px; }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: var(--text-main);
+        }
+
+        .main-container {
+            background-color: var(--white);
+            padding: 2.5rem;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 550px; /* Sedikit lebih lebar biar rapi */
+            text-align: center;
+            border: 1px solid var(--border);
+            box-sizing: border-box;
+        }
+
+        /* Badge Status Sync */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background-color: var(--accent);
+            color: #166534;
+            letter-spacing: 0.05em;
+        }
+
+        .status-badge.offline {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        h1 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        /* Input Scanner Modern */
+        #scanInput {
+            width: 100%;
+            padding: 18px;
+            border: 2px solid var(--border);
+            border-radius: 15px;
+            font-size: 1.3rem;
+            text-align: center;
+            outline: none;
+            transition: all 0.2s ease-in-out;
+            box-sizing: border-box;
+            background-color: #f8fafc;
+        }
+
+        #scanInput:focus {
+            border-color: var(--primary);
+            background-color: var(--white);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Area Hasil Scan */
+        .result-area {
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 2px solid #f1f5f9;
+        }
+
+        .product-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+        }
+
+        /* Grid Harga 2x2 yang Rapi */
+        .price-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .price-box {
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        .price-box:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+        }
+
+        /* Sorotan Khusus Eceran 1 */
+        .price-box.highlight {
+            background-color: #eff6ff;
+            border-color: #bfdbfe;
+            grid-column: span 2; /* Full width untuk eceran utama */
+            padding: 20px;
+        }
+
+        .price-label {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .price-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .price-box.highlight .price-value {
+            font-size: 3rem; /* Paling besar */
+        }
+
+        /* Tag SKU di bawah */
+        .sku-tag {
+            display: inline-block;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            background-color: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        /* Pesan Idle */
+        .idle-message {
+            margin-top: 4rem;
+            color: var(--text-sub);
+            font-style: italic;
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="status" class="status">Menghubungkan...</div>
-    <h2 style="margin-top: 0; color: #334155;">MiniPOS Scanner</h2>
-    <input type="text" id="scanInput" placeholder="SCAN BARCODE DI SINI" autofocus>
+<div class="main-container">
+    <div id="status" class="status-badge offline">Menghubungkan...</div>
+    <h1>MiniPOS Scanner Pro</h1>
+    
+    <input type="text" id="scanInput" placeholder="SCAN BARCODE..." autofocus>
 
-    <div class="result-box" id="resultDisplay" style="display:none;">
-        <div class="item-title" id="itemName">-</div>
+    <div class="result-area" id="resultDisplay" style="display: none;">
+        <div class="product-name" id="pName">-</div>
         
         <div class="price-grid">
-            <div class="price-card main-price">
+            <div class="price-box highlight">
                 <div class="price-label">Eceran 1 (Utama)</div>
-                <div class="price-value" id="priceE1">0</div>
+                <div class="price-value" id="pE1">Rp 0</div>
             </div>
             
-            <div class="price-card">
+            <div class="price-box">
                 <div class="price-label">Eceran 2</div>
-                <div class="price-value" id="priceE2">0</div>
+                <div class="price-value" id="pE2">Rp 0</div>
             </div>
 
-            <div class="price-card">
+            <div class="price-box">
                 <div class="price-label">Grosir 1</div>
-                <div class="price-value" id="priceG1">0</div>
+                <div class="price-value" id="pG1">Rp 0</div>
+            </div>
+
+            <div class="price-box">
+                <div class="price-label">Grosir 2</div>
+                <div class="price-value" id="pG2">Rp 0</div>
             </div>
         </div>
 
-        <div class="sku-tag" id="itemCode">SKU: -</div>
+        <div class="sku-tag" id="pCode">KODE: -</div>
     </div>
-    
-    <div id="idleMsg" style="margin-top: 3rem; color: #94a3b8; font-style: italic;">
-        Awaiting scan...
+
+    <div id="idleMsg" class="idle-message">
+        Siap menerima *scan* barang...
     </div>
 </div>
 
 <script>
-    const URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqFjmQEMLJl-UhiBkV6hDmVePKMGhWgUkwqPWiUOcv6YeBjX9-mw75au_WztJIkcbwr0D2hcDAGZrw/pub?gid=1746227063&single=true&output=csv";
+    // URL CSV Google Sheets kamu (pastikan sudah dipublish)
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqFjmQEMLJl-UhiBkV6hDmVePKMGhWgUkwqPWiUOcv6YeBjX9-mw75au_WztJIkcbwr0D2hcDAGZrw/pub?gid=1746227063&single=true&output=csv";
     
-    let inventory = [];
+    let inventoryData = [];
 
-    function loadData() {
-        Papa.parse(URL, {
+    // Fungsi muat data
+    function initApp() {
+        Papa.parse(CSV_URL, {
             download: true,
             header: true,
             skipEmptyLines: true,
-            complete: (r) => {
-                inventory = r.data;
-                const statusEl = document.getElementById('status');
-                statusEl.innerText = "✅ TERKONEKSI: " + inventory.length + " ITEM";
-                statusEl.className = "status online";
+            complete: function(results) {
+                inventoryData = results.data;
+                console.log("Data contoh baris 1:", inventoryData[0]); // Untuk cek nama kolom di console
+
+                // Update status badge
+                const statusBadge = document.getElementById('status');
+                statusBadge.innerText = "✅ ONLINE: " + inventoryData.length + " ITEM";
+                statusBadge.classList.remove('offline');
+            },
+            error: function() {
+                document.getElementById('status').innerText = "❌ GAGAL SYNC DATA";
             }
         });
     }
 
-    const input = document.getElementById('scanInput');
-    
-    input.addEventListener('keydown', (e) => {
+    const inputField = document.getElementById('scanInput');
+    const displayArea = document.getElementById('resultDisplay');
+    const idleMsg = document.getElementById('idleMsg');
+
+    // Listener untuk input alat scan
+    inputField.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            const val = input.value.trim();
-            findItem(val);
-            input.value = '';
+            const barcodeVal = inputField.value.trim();
+            if (barcodeVal) {
+                searchProduct(barcodeVal);
+            }
+            inputField.value = ''; // Reset input
         }
     });
 
-    function findItem(barcode) {
-        // Cari di kolom 'kode' sesuai file kamu
-        const item = inventory.find(i => String(i['kode']).trim() === barcode);
+    function searchProduct(barcode) {
+        // Cari barang berdasarkan kolom 'kode' (PENTING: Di Sheets judul kolomnya harus 'kode')
+        const product = inventoryData.find(item => String(item['kode']).trim() === barcode);
 
-        if (item) {
-            document.getElementById('idleMsg').style.display = 'none';
-            document.getElementById('resultDisplay').style.display = 'block';
+        if (product) {
+            // Sembunyikan pesan awal, tampilkan hasil
+            idleMsg.style.display = 'none';
+            displayArea.style.display = 'block';
             
-            document.getElementById('itemName').innerText = item['nama produk'];
-            document.getElementById('priceE1').innerText = "Rp " + (item['eceran 1'] || "0");
-            document.getElementById('priceE2').innerText = "Rp " + (item['eceran 2'] || "0");
-            document.getElementById('priceG1').innerText = "Rp " + (item['grosir 1'] || "0");
-            document.getElementById('itemCode').innerText = "KODE: " + barcode;
+            // Isi data (PENTING: Nama kolom 'nama produk', 'eceran 1', dll harus sama persis di Sheets)
+            document.getElementById('pName').innerText = product['nama produk'] || "Produk Tanpa Nama";
+            document.getElementById('pE1').innerText = formatRupiah(product['eceran 1']);
+            document.getElementById('pE2').innerText = formatRupiah(product['eceran 2']);
+            document.getElementById('pG1').innerText = formatRupiah(product['grosir 1']);
+            document.getElementById('pG2').innerText = formatRupiah(product['grosir 2']); // TARIK GROSIR 2
+            document.getElementById('pCode').innerText = "KODE: " + barcode;
         } else {
-            alert("Barang dengan kode " + barcode + " tidak terdaftar!");
+            alert("Barang dengan kode " + barcode + " tidak terdaftar di sistem!");
         }
     }
 
-    // Paksa fokus terus ke kotak input
-    document.addEventListener('click', () => input.focus());
-    loadData();
+    // Fungsi pembantu untuk format angka jadi Rupiah sederhana
+    function formatRupiah(angka) {
+        if (!angka) return "Rp 0";
+        // Bersihkan karakter non-angka dulu
+        const cleanAngka = angka.replace(/[^0-9]/g, '');
+        if (!cleanAngka) return "Rp 0";
+        
+        // Tambahkan titik ribuan
+        return "Rp " + cleanAngka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // Pastikan input selalu fokus walau layar diklik
+    document.addEventListener('click', () => inputField.focus());
+    
+    // Jalankan aplikasi
+    initApp();
 </script>
 
 </body>
