@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MiniPOS Scanner - Multi Price</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        :root { --bg: #f8fafc; --primary: #1e40af; --accent: #3b82f6; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .container { background: white; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; border: 1px solid #e2e8f0; }
+        .status { font-size: 0.75rem; padding: 5px 15px; border-radius: 50px; display: inline-block; margin-bottom: 1rem; font-weight: bold; }
+        .online { background: #dcfce7; color: #166534; }
+        input { width: 100%; padding: 15px; border: 2px solid #cbd5e1; border-radius: 12px; font-size: 1.2rem; text-align: center; outline: none; transition: all 0.3s; }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+        
+        .result-box { margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid #f1f5f9; }
+        .item-title { font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem; }
+        
+        /* Grid untuk Harga */
+        .price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 1rem; }
+        .price-card { background: #f1f5f9; padding: 10px; border-radius: 10px; text-align: center; }
+        .price-label { font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold; }
+        .price-value { font-size: 1.25rem; font-weight: 700; color: var(--primary); }
+        .main-price { grid-column: span 2; background: #eff6ff; border: 1px solid #bfdbfe; }
+        .main-price .price-value { font-size: 2.5rem; color: #2563eb; }
+
+        .sku-tag { display: inline-block; margin-top: 1.5rem; font-family: monospace; font-size: 0.8rem; color: #94a3b8; background: #f8fafc; padding: 2px 8px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="status" class="status">Menghubungkan...</div>
+    <h2 style="margin-top: 0; color: #334155;">MiniPOS Scanner</h2>
+    <input type="text" id="scanInput" placeholder="SCAN BARCODE DI SINI" autofocus>
+
+    <div class="result-box" id="resultDisplay" style="display:none;">
+        <div class="item-title" id="itemName">-</div>
+        
+        <div class="price-grid">
+            <div class="price-card main-price">
+                <div class="price-label">Eceran 1 (Utama)</div>
+                <div class="price-value" id="priceE1">0</div>
+            </div>
+            
+            <div class="price-card">
+                <div class="price-label">Eceran 2</div>
+                <div class="price-value" id="priceE2">0</div>
+            </div>
+
+            <div class="price-card">
+                <div class="price-label">Grosir 1</div>
+                <div class="price-value" id="priceG1">0</div>
+            </div>
+        </div>
+
+        <div class="sku-tag" id="itemCode">SKU: -</div>
+    </div>
+    
+    <div id="idleMsg" style="margin-top: 3rem; color: #94a3b8; font-style: italic;">
+        Awaiting scan...
+    </div>
+</div>
+
+<script>
+    const URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqFjmQEMLJl-UhiBkV6hDmVePKMGhWgUkwqPWiUOcv6YeBjX9-mw75au_WztJIkcbwr0D2hcDAGZrw/pub?gid=1746227063&single=true&output=csv";
+    
+    let inventory = [];
+
+    function loadData() {
+        Papa.parse(URL, {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: (r) => {
+                inventory = r.data;
+                const statusEl = document.getElementById('status');
+                statusEl.innerText = "✅ TERKONEKSI: " + inventory.length + " ITEM";
+                statusEl.className = "status online";
+            }
+        });
+    }
+
+    const input = document.getElementById('scanInput');
+    
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const val = input.value.trim();
+            findItem(val);
+            input.value = '';
+        }
+    });
+
+    function findItem(barcode) {
+        // Cari di kolom 'kode' sesuai file kamu
+        const item = inventory.find(i => String(i['kode']).trim() === barcode);
+
+        if (item) {
+            document.getElementById('idleMsg').style.display = 'none';
+            document.getElementById('resultDisplay').style.display = 'block';
+            
+            document.getElementById('itemName').innerText = item['nama produk'];
+            document.getElementById('priceE1').innerText = "Rp " + (item['eceran 1'] || "0");
+            document.getElementById('priceE2').innerText = "Rp " + (item['eceran 2'] || "0");
+            document.getElementById('priceG1').innerText = "Rp " + (item['grosir 1'] || "0");
+            document.getElementById('itemCode').innerText = "KODE: " + barcode;
+        } else {
+            alert("Barang dengan kode " + barcode + " tidak terdaftar!");
+        }
+    }
+
+    // Paksa fokus terus ke kotak input
+    document.addEventListener('click', () => input.focus());
+    loadData();
+</script>
+
+</body>
+</html>
