@@ -180,13 +180,13 @@
         
         <div class="price-grid">
             <div class="price-box highlight">
-                <div class="price-label">Eceran 1 (Utama)</div>
-                <div class="price-value" id="pE1">Rp 0</div>
+                <div class="price-label">Eceran 2 (Utama)</div>
+                <div class="price-value" id="pE2">Rp 0</div>
             </div>
             
             <div class="price-box">
-                <div class="price-label">Eceran 2</div>
-                <div class="price-value" id="pE2">Rp 0</div>
+                <div class="price-label">Eceran 1</div>
+                <div class="price-value" id="pE1">Rp 0</div>
             </div>
 
             <div class="price-box">
@@ -261,8 +261,8 @@
             
             // Isi data (PENTING: Nama kolom 'nama produk', 'eceran 1', dll harus sama persis di Sheets)
             document.getElementById('pName').innerText = product['nama produk'] || "Produk Tanpa Nama";
-            document.getElementById('pE1').innerText = formatRupiah(product['eceran 1']);
             document.getElementById('pE2').innerText = formatRupiah(product['eceran 2']);
+            document.getElementById('pE1').innerText = formatRupiah(product['eceran 1']);
             document.getElementById('pG1').innerText = formatRupiah(product['grosir 1']);
             document.getElementById('pG2').innerText = formatRupiah(product['grosir 2']); // TARIK GROSIR 2
             document.getElementById('pCode').innerText = "KODE: " + barcode;
