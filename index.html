@@ -255,26 +255,41 @@
         }
     });
 
-    function searchProduct(barcode) {
-        // Cari barang berdasarkan kolom 'kode' (PENTING: Di Sheets judul kolomnya harus 'kode')
-        const product = inventoryData.find(item => String(item['kode']).trim() === barcode);
+function searchProduct(barcode) {
+    // We now look for the scanned barcode in TWO different columns
+    const product = inventoryData.find(item => 
+        String(item['kode jamak']).trim() === barcode || 
+        String(item['kode tunggal']).trim() === barcode
+    );
 
-        if (product) {
-            // Sembunyikan pesan awal, tampilkan hasil
-            idleMsg.style.display = 'none';
-            displayArea.style.display = 'block';
-            
-            // Isi data (PENTING: Nama kolom 'nama produk', 'eceran 1', dll harus sama persis di Sheets)
-            document.getElementById('pName').innerText = product['nama produk'] || "Produk Tanpa Nama";
-            document.getElementById('pE2').innerText = formatRupiah(product['eceran 2']);
-            document.getElementById('pE1').innerText = formatRupiah(product['eceran 1']);
-            document.getElementById('pG1').innerText = formatRupiah(product['grosir 1']);
-            document.getElementById('pG2').innerText = formatRupiah(product['grosir 2']); // TARIK GROSIR 2
-            document.getElementById('pCode').innerText = "KODE: " + barcode;
+    if (product) {
+        idleMsg.style.display = 'none';
+        displayArea.style.display = 'block';
+        
+        // Mapping the new column names from your screenshot
+        document.getElementById('pName').innerText = product['nama produk'] || "Produk Tanpa Nama";
+        
+        // Prices - adjust based on which column you want as 'Main'
+        document.getElementById('pE2').innerText = formatRupiah(product['eceran 2']);
+        document.getElementById('pE1').innerText = formatRupiah(product['eceran 1']);
+        document.getElementById('pG1').innerText = formatRupiah(product['grosir 1']);
+        document.getElementById('pG2').innerText = formatRupiah(product['grosir 2']);
+        
+        // Show which code was scanned
+        document.getElementById('pCode').innerText = "KODE SCAN: " + barcode;
+
+        // Optional: Highlight if it's a Bulk/Grosir scan
+        if (String(product['kode jamak']).trim() === barcode) {
+            document.getElementById('pCode').innerText += " (GROSIR/LUSIN)";
+            document.getElementById('pCode').style.color = "#166534"; // Green for bulk
         } else {
-            alert("Barang dengan kode " + barcode + " tidak terdaftar di sistem!");
+            document.getElementById('pCode').style.color = "var(--text-sub)";
         }
+
+    } else {
+        alert("Barang dengan kode " + barcode + " tidak ditemukan!");
     }
+}
 
     // Fungsi pembantu untuk format angka jadi Rupiah sederhana
     function formatRupiah(angka) {
