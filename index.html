@@ -180,26 +180,24 @@
     <div class="product-name" id="pName">-</div>
     
     <div class="price-grid">
-        <!-- The Main Highlight Box -->
-        <div class="price-box highlight" id="mainBox">
-            <div class="price-label" id="mainLabel">HARGA UTAMA</div>
-            <div class="price-value" id="mainValue">Rp 0</div>
+        <!-- BARIS ATAS (PRIORITAS) -->
+        <div class="price-box highlight">
+            <div class="price-label" id="label1">LABEL 1</div>
+            <div class="price-value" id="val1">Rp 0</div>
+        </div>
+        <div class="price-box highlight">
+            <div class="price-label" id="label2">LABEL 2</div>
+            <div class="price-value" id="val2">Rp 0</div>
         </div>
         
-        <!-- The Secondary Boxes -->
+        <!-- BARIS BAWAH (SEKUNDER) -->
         <div class="price-box">
-            <div class="price-label" id="subLabel1">ECERAN</div>
-            <div class="price-value" id="subValue1">Rp 0</div>
+            <div class="price-label" id="label3">LABEL 3</div>
+            <div class="price-value" id="val3">Rp 0</div>
         </div>
-
         <div class="price-box">
-            <div class="price-label" id="subLabel2">GROSIR 1</div>
-            <div class="price-value" id="subValue2">Rp 0</div>
-        </div>
-
-        <div class="price-box">
-            <div class="price-label" id="subLabel3">GROSIR 2</div>
-            <div class="price-value" id="subValue3">Rp 0</div>
+            <div class="price-label" id="label4">LABEL 4</div>
+            <div class="price-value" id="val4">Rp 0</div>
         </div>
     </div>
 
@@ -265,27 +263,42 @@ function searchProduct(barcode) {
         document.getElementById('pName').innerText = product['nama produk'];
         document.getElementById('pCode').innerText = "SCAN: " + barcode;
 
-        // Logic: Is this a Bulk/Jamak scan?
         const isJamak = String(product['kode jamak']).trim() === barcode;
 
         if (isJamak) {
-            // JAMAK SCANNED: Grosir 1 goes to the TOP (Highlight)
-            updatePriceDisplay("HARGA GROSIR (LUSIN)", product['grosir 1'], 
-                               "Eceran 1", product['eceran 1'],
-                               "Eceran 2", product['eceran 2'],
-                               "Grosir 2", product['grosir 2']);
-            document.getElementById('mainBox').style.borderColor = "#166534"; // Green tint for bulk
+            // JIKA JAMAK: Grosir di Atas, Eceran di Bawah
+            fillPrice("GROSIR 1", product['grosir 1'], 
+                      "GROSIR 2", product['grosir 2'], 
+                      "ECERAN 1", product['eceran 1'], 
+                      "ECERAN 2", product['eceran 2']);
+            setHighlightColor("#166534"); // Hijau untuk grosir
         } else {
-            // TUNGGAL SCANNED: Eceran 1 goes to the TOP (Highlight)
-            updatePriceDisplay("HARGA ECERAN (PCS)", product['eceran 1'], 
-                               "Grosir 1", product['grosir 1'],
-                               "Grosir 2", product['grosir 2'],
-                               "Eceran 2", product['eceran 2']);
-            document.getElementById('mainBox').style.borderColor = "#2563eb"; // Blue tint for piece
+            // JIKA TUNGGAL: Eceran di Atas, Grosir di Bawah
+            fillPrice("ECERAN 1", product['eceran 1'], 
+                      "ECERAN 2", product['eceran 2'], 
+                      "GROSIR 1", product['grosir 1'], 
+                      "GROSIR 2", product['grosir 2']);
+            setHighlightColor("#2563eb"); // Biru untuk eceran
         }
     } else {
-        alert("Kode " + barcode + " tidak terdaftar!");
+        alert("Kode tidak ditemukan!");
     }
+}
+
+function fillPrice(l1, v1, l2, v2, l3, v3, l4, v4) {
+    document.getElementById('label1').innerText = l1;
+    document.getElementById('val1').innerText = formatRupiah(v1);
+    document.getElementById('label2').innerText = l2;
+    document.getElementById('val2').innerText = formatRupiah(v2);
+    document.getElementById('label3').innerText = l3;
+    document.getElementById('val3').innerText = formatRupiah(v3);
+    document.getElementById('label4').innerText = l4;
+    document.getElementById('val4').innerText = formatRupiah(v4);
+}
+
+function setHighlightColor(color) {
+    const boxes = document.querySelectorAll('.price-box.highlight');
+    boxes.forEach(box => box.style.borderColor = color);
 }
 
 // Helper function to fill the labels and values
