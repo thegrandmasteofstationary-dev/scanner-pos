@@ -176,37 +176,35 @@
     
     <input type="text" id="scanInput" placeholder="SCAN BARCODE..." autofocus>
 
-    <div class="result-area" id="resultDisplay" style="display: none;">
-        <div class="product-name" id="pName">-</div>
+<div class="result-area" id="resultDisplay" style="display: none;">
+    <div class="product-name" id="pName">-</div>
+    
+    <div class="price-grid">
+        <!-- The Main Highlight Box -->
+        <div class="price-box highlight" id="mainBox">
+            <div class="price-label" id="mainLabel">HARGA UTAMA</div>
+            <div class="price-value" id="mainValue">Rp 0</div>
+        </div>
         
-        <div class="price-grid">
-            <div class="price-box highlight">
-                <div class="price-label">Eceran 2 (Utama)</div>
-                <div class="price-label">/piece</div>
-                <div class="price-value" id="pE2">Rp 0</div>
-            </div>
-            
-            <div class="price-box">
-                <div class="price-label">Eceran 1</div>
-                <div class="price-label">/piece</div>
-                <div class="price-value" id="pE1">Rp 0</div>
-            </div>
-
-            <div class="price-box">
-                <div class="price-label">Grosir 1</div>
-                <div class="price-label">lusin</div>
-                <div class="price-value" id="pG1">Rp 0</div>
-            </div>
-
-            <div class="price-box">
-                <div class="price-label">Grosir 2</div>
-                <div class="price-label">pak</div>
-                <div class="price-value" id="pG2">Rp 0</div>
-            </div>
+        <!-- The Secondary Boxes -->
+        <div class="price-box">
+            <div class="price-label" id="subLabel1">ECERAN</div>
+            <div class="price-value" id="subValue1">Rp 0</div>
         </div>
 
-        <div class="sku-tag" id="pCode">KODE: -</div>
+        <div class="price-box">
+            <div class="price-label" id="subLabel2">GROSIR 1</div>
+            <div class="price-value" id="subValue2">Rp 0</div>
+        </div>
+
+        <div class="price-box">
+            <div class="price-label" id="subLabel3">GROSIR 2</div>
+            <div class="price-value" id="subValue3">Rp 0</div>
+        </div>
     </div>
+
+    <div class="sku-tag" id="pCode">KODE: -</div>
+</div>
 
     <div id="idleMsg" class="idle-message">
         Siap menerima *scan* barang...
@@ -256,7 +254,6 @@
     });
 
 function searchProduct(barcode) {
-    // We now look for the scanned barcode in TWO different columns
     const product = inventoryData.find(item => 
         String(item['kode jamak']).trim() === barcode || 
         String(item['kode tunggal']).trim() === barcode
@@ -265,32 +262,46 @@ function searchProduct(barcode) {
     if (product) {
         idleMsg.style.display = 'none';
         displayArea.style.display = 'block';
-        
-        // Mapping the new column names from your screenshot
-        document.getElementById('pName').innerText = product['nama produk'] || "Produk Tanpa Nama";
-        
-        // Prices - adjust based on which column you want as 'Main'
-        document.getElementById('pE2').innerText = formatRupiah(product['eceran 2']);
-        document.getElementById('pE1').innerText = formatRupiah(product['eceran 1']);
-        document.getElementById('pG1').innerText = formatRupiah(product['grosir 1']);
-        document.getElementById('pG2').innerText = formatRupiah(product['grosir 2']);
-        
-        // Show which code was scanned
-        document.getElementById('pCode').innerText = "KODE SCAN: " + barcode;
+        document.getElementById('pName').innerText = product['nama produk'];
+        document.getElementById('pCode').innerText = "SCAN: " + barcode;
 
-        // Optional: Highlight if it's a Bulk/Grosir scan
-        if (String(product['kode jamak']).trim() === barcode) {
-            document.getElementById('pCode').innerText += " (GROSIR/LUSIN)";
-            document.getElementById('pCode').style.color = "#166534"; // Green for bulk
+        // Logic: Is this a Bulk/Jamak scan?
+        const isJamak = String(product['kode jamak']).trim() === barcode;
+
+        if (isJamak) {
+            // JAMAK SCANNED: Grosir 1 goes to the TOP (Highlight)
+            updatePriceDisplay("HARGA GROSIR (LUSIN)", product['grosir 1'], 
+                               "Eceran 1", product['eceran 1'],
+                               "Eceran 2", product['eceran 2'],
+                               "Grosir 2", product['grosir 2']);
+            document.getElementById('mainBox').style.borderColor = "#166534"; // Green tint for bulk
         } else {
-            document.getElementById('pCode').style.color = "var(--text-sub)";
+            // TUNGGAL SCANNED: Eceran 1 goes to the TOP (Highlight)
+            updatePriceDisplay("HARGA ECERAN (PCS)", product['eceran 1'], 
+                               "Grosir 1", product['grosir 1'],
+                               "Grosir 2", product['grosir 2'],
+                               "Eceran 2", product['eceran 2']);
+            document.getElementById('mainBox').style.borderColor = "#2563eb"; // Blue tint for piece
         }
-
     } else {
-        alert("Barang dengan kode " + barcode + " tidak ditemukan!");
+        alert("Kode " + barcode + " tidak terdaftar!");
     }
 }
 
+// Helper function to fill the labels and values
+function updatePriceDisplay(mLab, mVal, sLab1, sVal1, sLab2, sVal2, sLab3, sVal3) {
+    document.getElementById('mainLabel').innerText = mLab;
+    document.getElementById('mainValue').innerText = formatRupiah(mVal);
+    
+    document.getElementById('subLabel1').innerText = sLab1;
+    document.getElementById('subValue1').innerText = formatRupiah(sVal1);
+    
+    document.getElementById('subLabel2').innerText = sLab2;
+    document.getElementById('subValue2').innerText = formatRupiah(sVal2);
+    
+    document.getElementById('subLabel3').innerText = sLab3;
+    document.getElementById('subValue3').innerText = formatRupiah(sVal3);
+}
     // Fungsi pembantu untuk format angka jadi Rupiah sederhana
     function formatRupiah(angka) {
         if (!angka) return "Rp 0";
