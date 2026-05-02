@@ -267,17 +267,17 @@ function searchProduct(barcode) {
 
         if (isJamak) {
             // JIKA JAMAK: Grosir di Atas, Eceran di Bawah
-            fillPrice("GROSIR 1", product['grosir 1'], 
-                      "GROSIR 2", product['grosir 2'], 
-                      "ECERAN 1", product['eceran 1'], 
-                      "ECERAN 2", product['eceran 2']);
+            fillPrice("GROSIR 2", product['grosir 2'], 
+                      "GROSIR 1", product['grosir 1'], 
+                      "ECERAN 2", product['eceran 2'], 
+                      "ECERAN 1", product['eceran 1']);
             setHighlightColor("#166534"); // Hijau untuk grosir
         } else {
             // JIKA TUNGGAL: Eceran di Atas, Grosir di Bawah
-            fillPrice("ECERAN 1", product['eceran 1'], 
-                      "ECERAN 2", product['eceran 2'], 
-                      "GROSIR 1", product['grosir 1'], 
-                      "GROSIR 2", product['grosir 2']);
+            fillPrice("ECERAN 2", product['eceran 2'], 
+                      "ECERAN 1", product['eceran 1'], 
+                      "GROSIR 2", product['grosir 2'], 
+                      "GROSIR 1", product['grosir 1']);
             setHighlightColor("#2563eb"); // Biru untuk eceran
         }
     } else {
