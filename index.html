@@ -36,6 +36,40 @@
             background-size: 40px 40px;
         }
 
+        /* Navbar Atas */
+        .navbar {
+            background-color: var(--primary-green);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 3rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .navbar .logo-area img {
+            height: 45px;
+            width: 45px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .navbar .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.05rem;
+            transition: opacity 0.2s;
+        }
+
+        .navbar .nav-links a:hover {
+            opacity: 0.8;
+        }
+
         /* Container Utama */
         .wrapper {
             flex: 1;
@@ -112,12 +146,15 @@
             border: 2px solid var(--primary-green);
             border-radius: 12px;
             background-color: #ffffff;
-            padding: 15px;
+            
+            /* Setting ini untuk bikin teks di dalam form benar-benar di tengah */
+            padding: 90px 20px 20px 20px;
             font-size: 1.4rem;
             font-weight: 700;
             text-align: center;
             resize: none;
             outline: none;
+            overflow: hidden;
             box-sizing: border-box;
             transition: box-shadow 0.2s;
         }
@@ -213,33 +250,43 @@
             padding: 4rem 0;
         }
 
-        /* TERJEMAHAN TAILWIND UTILITY KE PURE CSS UNTUK FLOATING FOOTER */
+        /* FLOATING FOOTER */
         .floating-footer {
-            position: fixed; /* fixed */
-            bottom: 1rem; /* bottom-4 */
-            left: 50%; /* left-1/2 */
-            transform: translateX(-50%); /* transform -translate-x-1/2 */
-            z-index: 50; /* z-50 */
-            pointer-events: none; /* pointer-events-none */
+            position: fixed; 
+            bottom: 1rem; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            z-index: 50; 
+            pointer-events: none; 
             
-            /* Warna utama dikonversi ke RGBA untuk mendukung efek opacity & blur */
             background-color: rgba(91, 110, 61, 0.85); 
-            color: #ffffff; /* text-white */
-            padding: 0.5rem 1.5rem; /* px-6 py-2 */
-            border-radius: 9999px; /* rounded-full */
-            font-weight: 700; /* font-bold */
-            font-size: 0.875rem; /* text-sm */
-            letter-spacing: 0.05em; /* tracking-wider */
+            color: #ffffff; 
+            padding: 0.5rem 1.5rem; 
+            border-radius: 9999px; 
+            font-weight: 700; 
+            font-size: 0.875rem; 
+            letter-spacing: 0.05em; 
             
-            /* Efek shadow-lg & backdrop-blur-sm Tailwind */
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.2); /* border border-white/20 */
+            border: 1px solid rgba(255, 255, 255, 0.2); 
         }
     </style>
 </head>
 <body>
+
+<div class="navbar">
+    <div class="logo-area">
+        <img src="FASTER.png" alt="Logo Toko Faster">
+    </div>
+    <div class="nav-links">
+        <a href="#">Home</a>
+        <a href="#">Cashier</a>
+        <a href="#">Inspect</a>
+    </div>
+</div>
+
 <div class="wrapper">
     <div class="main-card">
         <div id="status" class="status-badge offline">Menghubungkan...</div>
@@ -294,16 +341,20 @@
 </div>
 
 <script>
-    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqFjmQEMLJl-UhiBkV6hDmVePKMGhWgUkwqPWiUOcv6YeBjX9-mw75au_WztJIkcbwr0D2hcDAGZrw/pub?gid=0&single=true&output=csv";
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqFjmQEMLJl-UhiBkV6hDmVePKMGhWgUkwqPWiUOcv6YeBjX9-mw75au_WztJIkcbwr0D2hcDAGZrw/pub?gid=0&single=true&output=csv;
+    
+    // Data sekarang disimpan dalam format Array murni (Bukan Object Key)
     let inventoryData = [];
 
     function initApp() {
         Papa.parse(CSV_URL, {
             download: true,
-            header: true,
+            header: false, // <-- UBAH KE FALSE: Agar terhindar dari error cell merge di google sheets
             skipEmptyLines: true,
             complete: function(results) {
-                inventoryData = results.data;
+                // Membuang baris ke-0 (Nama-nama Header) karena kita hanya butuh datanya saja
+                inventoryData = results.data.slice(1);
+                
                 const statusBadge = document.getElementById('status');
                 statusBadge.innerText = "✅ DATABASE POS ONLINE: " + inventoryData.length + " ITEM";
                 statusBadge.classList.remove('offline');
@@ -346,34 +397,45 @@
             return;
         }
 
-        const product = inventoryData.find(item => 
-            (item['kode jamak'] && String(item['kode jamak']).trim() === barcode) || 
-            (item['kode tunggal'] && String(item['kode tunggal']).trim() === barcode)
+        // CARI BARCODE DI INDEX ARRAY: 
+        // Index [3] = Kolom D (Kode Jamak)
+        // Index [4] = Kolom E (Kode Tunggal)
+        const productRow = inventoryData.find(row => 
+            (row[3] && String(row[3]).trim() === barcode) || 
+            (row[4] && String(row[4]).trim() === barcode)
         );
 
-        if (product) {
+        if (productRow) {
             idleMsg.style.display = 'none';
             displayArea.style.display = 'block';
-            document.getElementById('pName').innerText = product['nama produk'];
+            
+            // Index [2] = Kolom C (Nama Produk)
+            document.getElementById('pName').innerText = productRow[2];
             document.getElementById('pCode').innerText = "KODE BARCODE: " + barcode;
 
-            const isJamak = product['kode jamak'] && String(product['kode jamak']).trim() === barcode;
+            const isJamak = productRow[3] && String(productRow[3]).trim() === barcode;
 
             removeHighlights();
 
+            // RUMUS MAPPING KE DATABASE SPREADSHEET TOKO FASTER:
+            // productRow[6]  -> Kolom G (Grosir 1)
+            // productRow[8]  -> Kolom I (Grosir 2)
+            // productRow[10] -> Kolom K (Eceran 1)
+            // productRow[12] -> Kolom M (Eceran 2)
+
             if (isJamak) {
-                fillPrice("Grosir 1", product['grosir 1'], 
-                          "Grosir 2", product['grosir 2'], 
-                          "Eceran 1", product['eceran 1'], 
-                          "Eceran 2", product['eceran 2']);
+                fillPrice("Grosir 1", productRow[6], 
+                          "Grosir 2", productRow[8], 
+                          "Eceran 1", productRow[10], 
+                          "Eceran 2", productRow[12]);
                 
                 document.getElementById('val1').parentElement.classList.add('active-scan');
                 document.getElementById('val2').parentElement.classList.add('active-scan');
             } else {
-                fillPrice("Eceran 1", product['eceran 1'], 
-                          "Eceran 2", product['eceran 2'], 
-                          "Grosir 1", product['grosir 1'], 
-                          "Grosir 2", product['grosir 2']);
+                fillPrice("Eceran 1", productRow[10], 
+                          "Eceran 2", productRow[12], 
+                          "Grosir 1", productRow[6], 
+                          "Grosir 2", productRow[8]);
                 
                 document.getElementById('val1').parentElement.classList.add('active-scan');
                 document.getElementById('val2').parentElement.classList.add('active-scan');
