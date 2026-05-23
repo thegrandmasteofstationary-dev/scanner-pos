@@ -8,214 +8,317 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
         :root {
-            --bg: #f1f5f9;
-            --white: #ffffff;
-            --text-main: #1e293b;
+            --primary-green: #5b6e3d; /* Hijau Utama POS */
+            --light-green: #eef2e6; /* Latar Belakang Kotak Harga */
+            --bg-accent: #cad5b9; /* Border & Detail */
+            --text-dark: #334155;
             --text-sub: #64748b;
-            --primary: #2563eb; /* Biru Utama */
-            --accent: #dbeade; /* Hijau Muda untuk Status */
-            --border: #e2e8f0;
         }
 
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
             margin: 0;
+            padding: 0;
+            background-image: url('https://i.pinimg.com/736x/a9/2e/63/a92e63f02128deabd96abd00225b4d9b.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar Atas */
+        .navbar {
+            background-color: var(--primary-green);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 3rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .navbar .logo-area img {
+            height: 45px;
+            border-radius: 50%;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .navbar .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.05rem;
+            transition: opacity 0.2s;
+        }
+
+        .navbar .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        /* Container Utama */
+        .wrapper {
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            color: var(--text-main);
+            padding: 2rem;
         }
 
-        .main-container {
-            background-color: var(--white);
-            padding: 2.5rem;
+        .main-card {
+            background-color: #ffffff;
             border-radius: 2rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 550px; /* Sedikit lebih lebar biar rapi */
-            text-align: center;
-            border: 1px solid var(--border);
-            box-sizing: border-box;
+            max-width: 1000px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 3rem;
+            position: relative;
         }
 
-        /* Badge Status Sync */
+        /* STATUS BADGE ABSOLUTE DI ATAS CARD */
         .status-badge {
-            display: inline-block;
+            position: absolute;
+            top: -15px;
+            left: 40px;
+            background-color: #f0fdf4;
+            color: #166534;
             padding: 6px 16px;
             border-radius: 50px;
             font-size: 0.8rem;
             font-weight: 700;
-            margin-bottom: 1.5rem;
-            background-color: var(--accent);
-            color: #166534;
-            letter-spacing: 0.05em;
+            border: 2px solid #bbf7d0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-
         .status-badge.offline {
             background-color: #fee2e2;
             color: #991b1b;
+            border-color: #fecaca;
         }
 
-        h1 {
-            margin: 0 0 1.5rem 0;
-            font-size: 1.8rem;
+        /* SISI KIRI: SCANNER AREA */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .left-panel h2 {
+            font-size: 1.6rem;
             font-weight: 800;
-            color: #0f172a;
+            margin: 0 0 0.5rem 0;
         }
 
-        /* Input Scanner Modern */
-        #scanInput {
-            width: 100%;
-            padding: 18px;
-            border: 2px solid var(--border);
-            border-radius: 15px;
-            font-size: 1.3rem;
+        .left-panel hr {
+            border: none;
+            height: 2px;
+            background-color: #cbd5e1;
+            margin-bottom: 1.5rem;
+        }
+
+        .field-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        /* Scanner Area Gede Sesuai Request */
+        .scanner-box {
+            flex: 1;
+            min-height: 250px;
+            border: 2px solid var(--primary-green);
+            border-radius: 12px;
+            background-color: #ffffff;
+            padding: 15px;
+            font-size: 1.5rem;
+            font-weight: 700;
             text-align: center;
+            resize: none;
             outline: none;
-            transition: all 0.2s ease-in-out;
             box-sizing: border-box;
-            background-color: #f8fafc;
+            transition: box-shadow 0.2s;
         }
 
-        #scanInput:focus {
-            border-color: var(--primary);
-            background-color: var(--white);
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        .scanner-box:focus {
+            box-shadow: 0 0 0 4px rgba(91, 110, 61, 0.2);
         }
 
-        /* Area Hasil Scan */
-        .result-area {
-            margin-top: 2.5rem;
-            padding-top: 2rem;
-            border-top: 2px solid #f1f5f9;
+        .scan-btn {
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-top: 1.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
         }
 
-        .product-name {
+        .scan-btn:hover {
+            background-color: #4a5a32;
+        }
+
+        /* SISI KANAN: RESULT DISPLAY */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .product-title {
             font-size: 1.6rem;
             font-weight: 700;
-            color: var(--text-main);
+            color: var(--primary-green);
+            text-align: right;
             margin-bottom: 1.5rem;
-            line-height: 1.3;
+            min-height: 2.4rem;
         }
 
-        /* Grid Harga 2x2 yang Rapi */
-        .price-grid {
+        .price-row {
+            margin-bottom: 1.2rem;
+        }
+
+        .price-row.half {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 2rem;
+            gap: 1rem;
         }
 
-        .price-box {
-            background-color: #f8fafc;
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            transition: transform 0.2s;
-        }
-
-        .price-box:hover {
-            transform: translateY(-3px);
-            border-color: var(--primary);
-        }
-
-        /* Sorotan Khusus Eceran 1 */
-        .price-box.highlight {
-            background-color: #eff6ff;
-            border-color: #bfdbfe;
-            grid-column: span 2; /* Full width untuk eceran utama */
-            padding: 20px;
-        }
-
-        .price-label {
-            font-size: 0.75rem;
-            color: var(--text-sub);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
+        .label-text {
+            font-size: 1rem;
             font-weight: 700;
-            margin-bottom: 4px;
+            margin-bottom: 0.4rem;
         }
 
-        .price-value {
-            font-size: 1.5rem;
+        /* Desain Kotak Harga Sesuai Screenshot */
+        .display-box {
+            background-color: var(--light-green);
+            border: 2px solid rgba(91, 110, 61, 0.15);
+            border-radius: 16px;
+            padding: 1rem;
+            font-size: 1.8rem;
             font-weight: 800;
-            color: var(--primary);
+            color: var(--primary-green);
+            text-align: center;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s;
         }
 
-        .price-box.highlight .price-value {
-            font-size: 3rem; /* Paling besar */
+        /* Penanda jika box itu merupakan prioritas hasil scan (Eceran/Grosir) */
+        .display-box.active-scan {
+            border-color: var(--primary-green);
+            background-color: #e2ebda;
+            transform: scale(1.02);
         }
 
-        /* Tag SKU di bawah */
         .sku-tag {
-            display: inline-block;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.85rem;
+            text-align: right;
+            font-family: monospace;
             color: var(--text-sub);
-            background-color: #f1f5f9;
-            padding: 4px 10px;
-            border-radius: 6px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
         }
 
-        /* Pesan Idle */
-        .idle-message {
-            margin-top: 4rem;
+        /* Footer Copyright */
+        .footer-tag {
+            position: absolute;
+            bottom: -55px;
+            right: 0;
+            background-color: var(--primary-green);
+            color: #ffffff;
+            padding: 6px 16px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        /* Tampilan Awal Sebelum di Scan */
+        .idle-state {
             color: var(--text-sub);
             font-style: italic;
-            font-size: 1.1rem;
+            font-size: 1.3rem;
+            text-align: center;
+            padding: 4rem 0;
         }
     </style>
 </head>
-<body style="background-image: url('https://i.pinimg.com/736x/a9/2e/63/a92e63f02128deabd96abd00225b4d9b.jpg'); background-size: cover; background-position: center; background-attachment: fixed;">
+<body>
 
-<div class="main-container">
-    <div id="status" class="status-badge offline">Menghubungkan...</div>
-    <h1>Scan your item...</h1>
-    
-    <input type="text" id="scanInput" placeholder="SCAN BARCODE..." autofocus>
-
-<div class="result-area" id="resultDisplay" style="display: none;">
-    <div class="product-name" id="pName">-</div>
-    
-    <div class="price-grid">
-        <!-- BARIS ATAS (PRIORITAS) -->
-        <div class="price-box highlight">
-            <div class="price-label" id="label1">LABEL 1</div>
-            <div class="price-value" id="val1">Rp 0</div>
-        </div>
-        <div class="price-box highlight">
-            <div class="price-label" id="label2">LABEL 2</div>
-            <div class="price-value" id="val2">Rp 0</div>
-        </div>
-        
-        <!-- BARIS BAWAH (SEKUNDER) -->
-        <div class="price-box">
-            <div class="price-label" id="label3">LABEL 3</div>
-            <div class="price-value" id="val3">Rp 0</div>
-        </div>
-        <div class="price-box">
-            <div class="price-label" id="label4">LABEL 4</div>
-            <div class="price-value" id="val4">Rp 0</div>
-        </div>
+<div class="navbar">
+    <div class="logo-area">
+        <img src="https://i.pinimg.com/736x/26/ce/86/26ce8634c0cac362ca9b33dea6e2b527.jpg" alt="Logo">
     </div>
-
-    <div class="sku-tag" id="pCode">KODE: -</div>
+    <div class="nav-links">
+        <a href="#">Home</a>
+        <a href="#">Cashier</a>
+        <a href="#">Inspect</a>
+    </div>
 </div>
 
-    <div id="idleMsg" class="idle-message">
-        Siap menerima *scan* barang...
+<div class="wrapper">
+    <div class="main-card">
+        <div id="status" class="status-badge offline">Menghubungkan...</div>
+        
+        <div class="left-panel">
+            <h2>Kasir (POS Scanner)</h2>
+            <hr>
+            <div class="field-label">Scanner area</div>
+            
+            <textarea id="scanInput" class="scanner-box" placeholder="KLIK DI SINI / LANGSUNG SCAN BARCODE BARANG..."></textarea>
+            
+            <button class="scan-btn" id="manualScanBtn">Scan</button>
+        </div>
+
+        <div class="right-panel">
+            <div id="idleMsg" class="idle-state">
+                Silakan lakukan *scanning* produk...
+            </div>
+
+            <div id="resultDisplay" style="display: none;">
+                <div class="product-title" id="pName">Item's name - Brand name</div>
+                
+                <div class="price-row">
+                    <div class="label-text" id="label1">Eceran 1</div>
+                    <div class="display-box" id="val1">Rp0</div>
+                </div>
+
+                <div class="price-row">
+                    <div class="label-text" id="label2">Eceran 2</div>
+                    <div class="display-box" id="val2">Rp0</div>
+                </div>
+
+                <div class="price-row half">
+                    <div>
+                        <div class="label-text" id="label3">Grosir 1</div>
+                        <div class="display-box" id="val3">RpXXXXXX</div>
+                    </div>
+                    <div>
+                        <div class="label-text" id="label4">Grosir 2</div>
+                        <div class="display-box" id="val4">RpXXXXXX</div>
+                    </div>
+                </div>
+
+                <div class="sku-tag" id="pCode">SCAN CODE: -</div>
+            </div>
+        </div>
+
+        <div class="footer-tag">TGOS HELPER © ALL RIGHTS RESERVED 2026</div>
     </div>
 </div>
 
 <script>
-    // URL CSV Google Sheets kamu (pastikan sudah dipublish)
-    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqFjmQEMLJl-UhiBkV6hDmVePKMGhWgUkwqPWiUOcv6YeBjX9-mw75au_WztJIkcbwr0D2hcDAGZrw/pub?gid=0&single=true&output=csv";
-    
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqFjmQEMLJl-UhiBkV6hDmVePKMGhWgUkwqPWiUOcv6YeBjX9-mw75au_WztJIkcbwr0D2hcDAGZrw/pub?gid=1746227063&single=true&output=csv";
     let inventoryData = [];
 
-    // Fungsi muat data
     function initApp() {
         Papa.parse(CSV_URL, {
             download: true,
@@ -223,15 +326,14 @@
             skipEmptyLines: true,
             complete: function(results) {
                 inventoryData = results.data;
-                console.log("Data contoh baris 1:", inventoryData[0]); // Untuk cek nama kolom di console
-
-                // Update status badge
                 const statusBadge = document.getElementById('status');
-                statusBadge.innerText = "✅ ONLINE: " + inventoryData.length + " ITEM";
+                statusBadge.innerText = "✅ DATABASE POS ONLINE: " + inventoryData.length + " ITEM";
                 statusBadge.classList.remove('offline');
             },
             error: function() {
-                document.getElementById('status').innerText = "❌ GAGAL SYNC DATA";
+                const statusBadge = document.getElementById('status');
+                statusBadge.innerText = "❌ GAGAL SINKRONISASI DATABASE";
+                statusBadge.classList.add('offline');
             }
         });
     }
@@ -239,97 +341,109 @@
     const inputField = document.getElementById('scanInput');
     const displayArea = document.getElementById('resultDisplay');
     const idleMsg = document.getElementById('idleMsg');
+    const manualBtn = document.getElementById('manualScanBtn');
 
-    // Listener untuk input alat scan
+    // Proses input dari scanner (Membaca event Enter)
     inputField.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            const barcodeVal = inputField.value.trim();
-            if (barcodeVal) {
-                searchProduct(barcodeVal);
-            }
-            inputField.value = ''; // Reset input
+            e.preventDefault(); // Mencegah baris baru di textarea
+            processScan();
         }
     });
 
-function searchProduct(barcode) {
-    const product = inventoryData.find(item => 
-        String(item['kode jamak']).trim() === barcode || 
-        String(item['kode tunggal']).trim() === barcode
-    );
+    // Tombol manual 'Scan' juga bisa diklik jika dibutuhkan
+    manualBtn.addEventListener('click', () => {
+        processScan();
+    });
 
-    if (product) {
-        idleMsg.style.display = 'none';
-        displayArea.style.display = 'block';
-        document.getElementById('pName').innerText = product['nama produk'];
-        document.getElementById('pCode').innerText = "SCAN: " + barcode;
-
-        const isJamak = String(product['kode jamak']).trim() === barcode;
-
-        if (isJamak) {
-            // JIKA JAMAK: Grosir di Atas, Eceran di Bawah
-            fillPrice("GROSIR 2", product['grosir 2'], 
-                      "GROSIR 1", product['grosir 1'], 
-                      "ECERAN 2", product['eceran 2'], 
-                      "ECERAN 1", product['eceran 1']);
-            setHighlightColor("#166534"); // Hijau untuk grosir
-        } else {
-            // JIKA TUNGGAL: Eceran di Atas, Grosir di Bawah
-            fillPrice("ECERAN 2", product['eceran 2'], 
-                      "ECERAN 1", product['eceran 1'], 
-                      "GROSIR 2", product['grosir 2'], 
-                      "GROSIR 1", product['grosir 1']);
-            setHighlightColor("#2563eb"); // Biru untuk eceran
+    function processScan() {
+        const barcodeVal = inputField.value.trim();
+        if (barcodeVal) {
+            searchProduct(barcodeVal);
         }
-    } else {
-        alert("Kode tidak ditemukan!");
+        inputField.value = ''; // Reset scanner box area
     }
-}
 
-function fillPrice(l1, v1, l2, v2, l3, v3, l4, v4) {
-    document.getElementById('label1').innerText = l1;
-    document.getElementById('val1').innerText = formatRupiah(v1);
-    document.getElementById('label2').innerText = l2;
-    document.getElementById('val2').innerText = formatRupiah(v2);
-    document.getElementById('label3').innerText = l3;
-    document.getElementById('val3').innerText = formatRupiah(v3);
-    document.getElementById('label4').innerText = l4;
-    document.getElementById('val4').innerText = formatRupiah(v4);
-}
+    function searchProduct(barcode) {
+        if (inventoryData.length === 0) {
+            alert("Database sedang memuat data, mohon tunggu.");
+            return;
+        }
 
-function setHighlightColor(color) {
-    const boxes = document.querySelectorAll('.price-box.highlight');
-    boxes.forEach(box => box.style.borderColor = color);
-}
+        const product = inventoryData.find(item => 
+            (item['kode jamak'] && String(item['kode jamak']).trim() === barcode) || 
+            (item['kode tunggal'] && String(item['kode tunggal']).trim() === barcode)
+        );
 
-// Helper function to fill the labels and values
-function updatePriceDisplay(mLab, mVal, sLab1, sVal1, sLab2, sVal2, sLab3, sVal3) {
-    document.getElementById('mainLabel').innerText = mLab;
-    document.getElementById('mainValue').innerText = formatRupiah(mVal);
-    
-    document.getElementById('subLabel1').innerText = sLab1;
-    document.getElementById('subValue1').innerText = formatRupiah(sVal1);
-    
-    document.getElementById('subLabel2').innerText = sLab2;
-    document.getElementById('subValue2').innerText = formatRupiah(sVal2);
-    
-    document.getElementById('subLabel3').innerText = sLab3;
-    document.getElementById('subValue3').innerText = formatRupiah(sVal3);
-}
-    // Fungsi pembantu untuk format angka jadi Rupiah sederhana
+        if (product) {
+            idleMsg.style.display = 'none';
+            displayArea.style.display = 'block';
+            document.getElementById('pName').innerText = product['nama produk'];
+            document.getElementById('pCode').innerText = "KODE BARCODE: " + barcode;
+
+            const isJamak = product['kode jamak'] && String(product['kode jamak']).trim() === barcode;
+
+            // Reset highlight effect dahulu
+            removeHighlights();
+
+            if (isJamak) {
+                // JIKA SCAN KODE JAMAK (GROSIR)
+                // Kotak baris atas diisi data Grosir 1 & Grosir 2
+                fillPrice("Grosir 1", product['grosir 1'], 
+                          "Grosir 2", product['grosir 2'], 
+                          "Eceran 1", product['eceran 1'], 
+                          "Eceran 2", product['eceran 2']);
+                
+                // Tambahkan efek highlight aktif ke kotak baris atas (Grosir)
+                document.getElementById('val1').parentElement.classList.add('active-scan');
+                document.getElementById('val2').parentElement.classList.add('active-scan');
+            } else {
+                // JIKA SCAN KODE TUNGGAL (ECERAN)
+                // Kotak baris atas diisi data Eceran 1 & Eceran 2
+                fillPrice("Eceran 1", product['eceran 1'], 
+                          "Eceran 2", product['eceran 2'], 
+                          "Grosir 1", product['grosir 1'], 
+                          "Grosir 2", product['grosir 2']);
+                
+                // Tambahkan efek highlight aktif ke kotak baris atas (Eceran)
+                document.getElementById('val1').parentElement.classList.add('active-scan');
+                document.getElementById('val2').parentElement.classList.add('active-scan');
+            }
+        } else {
+            alert("Kode (" + barcode + ") tidak terdaftar di database Toko Faster.");
+        }
+    }
+
+    function fillPrice(l1, v1, l2, v2, l3, v3, l4, v4) {
+        document.getElementById('label1').innerText = l1;
+        document.getElementById('val1').innerText = formatRupiah(v1);
+        document.getElementById('label2').innerText = l2;
+        document.getElementById('val2').innerText = formatRupiah(v2);
+        document.getElementById('label3').innerText = l3;
+        document.getElementById('val3').innerText = formatRupiah(v3);
+        document.getElementById('label4').innerText = l4;
+        document.getElementById('val4').innerText = formatRupiah(v4);
+    }
+
+    function removeHighlights() {
+        const boxes = document.querySelectorAll('.display-box');
+        boxes.forEach(box => box.classList.remove('active-scan'));
+    }
+
     function formatRupiah(angka) {
-        if (!angka) return "Rp 0";
-        // Bersihkan karakter non-angka dulu
-        const cleanAngka = angka.replace(/[^0-9]/g, '');
-        if (!cleanAngka) return "Rp 0";
-        
-        // Tambahkan titik ribuan
-        return "Rp " + cleanAngka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        if (angka === undefined || angka === null || angka === "") return "Rp-";
+        let strAngka = String(angka).replace(/[^0-9]/g, '');
+        if (!strAngka) return "Rp0";
+        return "Rp" + strAngka.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
-    // Pastikan input selalu fokus walau layar diklik
-    document.addEventListener('click', () => inputField.focus());
+    // Auto focus lock ke Scanner Area yang besar agar user tinggal scan saja tanpa klik-klik lagi
+    document.addEventListener('click', (e) => {
+        if(e.target !== manualBtn) {
+            inputField.focus();
+        }
+    });
     
-    // Jalankan aplikasi
     initApp();
 </script>
 
