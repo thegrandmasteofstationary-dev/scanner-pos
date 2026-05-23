@@ -3,30 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="icon" type="image/png" href="FASTER.png">
     <title>Toko Faster's Scanning System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
         :root {
             --primary-green: #5b6e3d; /* Hijau Utama POS */
             --light-green: #eef2e6; /* Latar Belakang Kotak Harga */
             --bg-accent: #cad5b9; /* Border & Detail */
-            --text-dark: #334155;
+            --text-dark: #1e293b;
             --text-sub: #64748b;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             margin: 0;
             padding: 0;
-            background-image: url('https://i.pinimg.com/1200x/be/24/be/be24be57ec2fe790126cf56ac20d693e.jpg'); 
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
             color: var(--text-dark);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+
+            /* PURE CSS GINGHAM BACKGROUND (Hijau Sage Lembut) */
+            background-color: #f4f7f0;
+            background-image: 
+                linear-gradient(90deg, rgba(91, 110, 61, 0.07) 50%, transparent 50%),
+                linear-gradient(rgba(91, 110, 61, 0.07) 50%, transparent 50%);
+            background-size: 40px 40px;
         }
 
         /* Navbar Atas */
@@ -41,6 +48,8 @@
 
         .navbar .logo-area img {
             height: 45px;
+            width: 45px;
+            object-fit: cover;
             border-radius: 50%;
         }
 
@@ -76,14 +85,15 @@
             width: 100%;
             max-width: 1000px;
             padding: 2.5rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
             display: grid;
             grid-template-columns: 1fr 1.2fr;
             gap: 3rem;
             position: relative;
+            box-sizing: border-box;
         }
 
-        /* STATUS BADGE ABSOLUTE DI ATAS CARD */
+        /* Status Badge Sinkronisasi */
         .status-badge {
             position: absolute;
             top: -15px;
@@ -113,6 +123,7 @@
             font-size: 1.6rem;
             font-weight: 800;
             margin: 0 0 0.5rem 0;
+            letter-spacing: -0.02em;
         }
 
         .left-panel hr {
@@ -128,15 +139,16 @@
             margin-bottom: 0.8rem;
         }
 
-        /* Scanner Area Gede Sesuai Request */
+        /* Scanner Area Besar */
         .scanner-box {
+            font-family: 'Inter', sans-serif;
             flex: 1;
             min-height: 250px;
             border: 2px solid var(--primary-green);
             border-radius: 12px;
             background-color: #ffffff;
             padding: 15px;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
             text-align: center;
             resize: none;
@@ -150,6 +162,7 @@
         }
 
         .scan-btn {
+            font-family: 'Inter', sans-serif;
             background-color: var(--primary-green);
             color: white;
             border: none;
@@ -180,6 +193,7 @@
             text-align: right;
             margin-bottom: 1.5rem;
             min-height: 2.4rem;
+            letter-spacing: -0.01em;
         }
 
         .price-row {
@@ -198,7 +212,7 @@
             margin-bottom: 0.4rem;
         }
 
-        /* Desain Kotak Harga Sesuai Screenshot */
+        /* Kotak Harga */
         .display-box {
             background-color: var(--light-green);
             border: 2px solid rgba(91, 110, 61, 0.15);
@@ -210,9 +224,10 @@
             text-align: center;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
             transition: all 0.2s;
+            letter-spacing: -0.02em;
         }
 
-        /* Penanda jika box itu merupakan prioritas hasil scan (Eceran/Grosir) */
+        /* Efek Kotak Aktif Hasil Scan */
         .display-box.active-scan {
             border-color: var(--primary-green);
             background-color: #e2ebda;
@@ -241,7 +256,7 @@
             letter-spacing: 0.05em;
         }
 
-        /* Tampilan Awal Sebelum di Scan */
+        /* Pesan Awal */
         .idle-state {
             color: var(--text-sub);
             font-style: italic;
@@ -255,7 +270,7 @@
 
 <div class="navbar">
     <div class="logo-area">
-        <img src="https://i.pinimg.com/736x/26/ce/86/26ce8634c0cac362ca9b33dea6e2b527.jpg" alt="Logo">
+        <img src="logo.png" alt="Logo Toko Faster">
     </div>
     <div class="nav-links">
         <a href="#">Home</a>
@@ -343,15 +358,13 @@
     const idleMsg = document.getElementById('idleMsg');
     const manualBtn = document.getElementById('manualScanBtn');
 
-    // Proses input dari scanner (Membaca event Enter)
     inputField.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            e.preventDefault(); // Mencegah baris baru di textarea
+            e.preventDefault();
             processScan();
         }
     });
 
-    // Tombol manual 'Scan' juga bisa diklik jika dibutuhkan
     manualBtn.addEventListener('click', () => {
         processScan();
     });
@@ -361,7 +374,7 @@
         if (barcodeVal) {
             searchProduct(barcodeVal);
         }
-        inputField.value = ''; // Reset scanner box area
+        inputField.value = '';
     }
 
     function searchProduct(barcode) {
@@ -383,29 +396,22 @@
 
             const isJamak = product['kode jamak'] && String(product['kode jamak']).trim() === barcode;
 
-            // Reset highlight effect dahulu
             removeHighlights();
 
             if (isJamak) {
-                // JIKA SCAN KODE JAMAK (GROSIR)
-                // Kotak baris atas diisi data Grosir 1 & Grosir 2
                 fillPrice("Grosir 1", product['grosir 1'], 
                           "Grosir 2", product['grosir 2'], 
                           "Eceran 1", product['eceran 1'], 
                           "Eceran 2", product['eceran 2']);
                 
-                // Tambahkan efek highlight aktif ke kotak baris atas (Grosir)
                 document.getElementById('val1').parentElement.classList.add('active-scan');
                 document.getElementById('val2').parentElement.classList.add('active-scan');
             } else {
-                // JIKA SCAN KODE TUNGGAL (ECERAN)
-                // Kotak baris atas diisi data Eceran 1 & Eceran 2
                 fillPrice("Eceran 1", product['eceran 1'], 
                           "Eceran 2", product['eceran 2'], 
                           "Grosir 1", product['grosir 1'], 
                           "Grosir 2", product['grosir 2']);
                 
-                // Tambahkan efek highlight aktif ke kotak baris atas (Eceran)
                 document.getElementById('val1').parentElement.classList.add('active-scan');
                 document.getElementById('val2').parentElement.classList.add('active-scan');
             }
@@ -437,7 +443,6 @@
         return "Rp" + strAngka.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
-    // Auto focus lock ke Scanner Area yang besar agar user tinggal scan saja tanpa klik-klik lagi
     document.addEventListener('click', (e) => {
         if(e.target !== manualBtn) {
             inputField.focus();
