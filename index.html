@@ -36,40 +36,6 @@
             background-size: 40px 40px;
         }
 
-        /* Navbar Atas */
-        .navbar {
-            background-color: var(--primary-green);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.8rem 3rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
-
-        .navbar .logo-area img {
-            height: 45px;
-            width: 45px;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-
-        .navbar .nav-links {
-            display: flex;
-            gap: 2.5rem;
-        }
-
-        .navbar .nav-links a {
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1.05rem;
-            transition: opacity 0.2s;
-        }
-
-        .navbar .nav-links a:hover {
-            opacity: 0.8;
-        }
-
         /* Container Utama */
         .wrapper {
             flex: 1;
@@ -274,18 +240,6 @@
     </style>
 </head>
 <body>
-
-<div class="navbar">
-    <div class="logo-area">
-        <img src="FASTER.png" alt="Logo Toko Faster">
-    </div>
-    <div class="nav-links">
-        <a href="#">Home</a>
-        <a href="#">Cashier</a>
-        <a href="#">Inspect</a>
-    </div>
-</div>
-
 <div class="wrapper">
     <div class="main-card">
         <div id="status" class="status-badge offline">Menghubungkan...</div>
