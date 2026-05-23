@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="FASTER.png">
+    <link rel="icon" type="image/png" href="logo.png">
     <title>Toko Faster's Scanning System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,9 +12,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
         :root {
-            --primary-green: #5b6e3d; /* Hijau Utama POS */
-            --light-green: #eef2e6; /* Latar Belakang Kotak Harga */
-            --bg-accent: #cad5b9; /* Border & Detail */
+            --primary-green: #5b6e3d;
+            --light-green: #eef2e6;
+            --bg-accent: #cad5b9;
             --text-dark: #1e293b;
             --text-sub: #64748b;
         }
@@ -28,7 +28,7 @@
             display: flex;
             flex-direction: column;
 
-            /* PURE CSS GINGHAM BACKGROUND (Hijau Sage Lembut) */
+            /* PURE CSS GINGHAM BACKGROUND */
             background-color: #f4f7f0;
             background-image: 
                 linear-gradient(90deg, rgba(91, 110, 61, 0.07) 50%, transparent 50%),
@@ -93,7 +93,7 @@
             box-sizing: border-box;
         }
 
-        /* Status Badge Sinkronisasi */
+        /* Status Badge */
         .status-badge {
             position: absolute;
             top: -15px;
@@ -113,7 +113,7 @@
             border-color: #fecaca;
         }
 
-        /* SISI KIRI: SCANNER AREA */
+        /* SISI KIRI */
         .left-panel {
             display: flex;
             flex-direction: column;
@@ -139,7 +139,6 @@
             margin-bottom: 0.8rem;
         }
 
-        /* Scanner Area Besar */
         .scanner-box {
             font-family: 'Inter', sans-serif;
             flex: 1;
@@ -179,7 +178,7 @@
             background-color: #4a5a32;
         }
 
-        /* SISI KANAN: RESULT DISPLAY */
+        /* SISI KANAN */
         .right-panel {
             display: flex;
             flex-direction: column;
@@ -212,7 +211,6 @@
             margin-bottom: 0.4rem;
         }
 
-        /* Kotak Harga */
         .display-box {
             background-color: var(--light-green);
             border: 2px solid rgba(91, 110, 61, 0.15);
@@ -227,7 +225,6 @@
             letter-spacing: -0.02em;
         }
 
-        /* Efek Kotak Aktif Hasil Scan */
         .display-box.active-scan {
             border-color: var(--primary-green);
             background-color: #e2ebda;
@@ -242,21 +239,6 @@
             font-size: 0.9rem;
         }
 
-        /* Footer Copyright */
-        .footer-tag {
-            position: absolute;
-            bottom: -55px;
-            right: 0;
-            background-color: var(--primary-green);
-            color: #ffffff;
-            padding: 6px 16px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-        }
-
-        /* Pesan Awal */
         .idle-state {
             color: var(--text-sub);
             font-style: italic;
@@ -264,13 +246,38 @@
             text-align: center;
             padding: 4rem 0;
         }
+
+        /* TERJEMAHAN TAILWIND UTILITY KE PURE CSS UNTUK FLOATING FOOTER */
+        .floating-footer {
+            position: fixed; /* fixed */
+            bottom: 1rem; /* bottom-4 */
+            left: 50%; /* left-1/2 */
+            transform: translateX(-50%); /* transform -translate-x-1/2 */
+            z-index: 50; /* z-50 */
+            pointer-events: none; /* pointer-events-none */
+            
+            /* Warna utama dikonversi ke RGBA untuk mendukung efek opacity & blur */
+            background-color: rgba(91, 110, 61, 0.85); 
+            color: #ffffff; /* text-white */
+            padding: 0.5rem 1.5rem; /* px-6 py-2 */
+            border-radius: 9999px; /* rounded-full */
+            font-weight: 700; /* font-bold */
+            font-size: 0.875rem; /* text-sm */
+            letter-spacing: 0.05em; /* tracking-wider */
+            
+            /* Efek shadow-lg & backdrop-blur-sm Tailwind */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.2); /* border border-white/20 */
+        }
     </style>
 </head>
 <body>
 
 <div class="navbar">
     <div class="logo-area">
-        <img src="FASTER.png" alt="Logo Toko Faster">
+        <img src="logo.png" alt="Logo Toko Faster">
     </div>
     <div class="nav-links">
         <a href="#">Home</a>
@@ -327,14 +334,13 @@
         </div>
     </div>
 </div>
-<div class="screen-area fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none">
-    <div class="warna-utama text-white px-6 py-2 rounded-full font-bold shadow-lg text-sm tracking-wider opacity-80 backdrop-blur-sm border border-white/20">
-        TGOS HELPER © ALL RIGHTS RESERVED 2026
-    </div>
+
+<div class="floating-footer">
+    TGOS HELPER © ALL RIGHTS RESERVED 2026
 </div>
 
 <script>
-    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqFjmQEMLJl-UhiBkV6hDmVePKMGhWgUkwqPWiUOcv6YeBjX9-mw75au_WztJIkcbwr0D2hcDAGZrw/pub?gid=0&single=true&output=csv";
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqFjmQEMLJl-UhiBkV6hDmVePKMGhWgUkwqPWiUOcv6YeBjX9-mw75au_WztJIkcbwr0D2hcDAGZrw/pub?gid=1746227063&single=true&output=csv";
     let inventoryData = [];
 
     function initApp() {
