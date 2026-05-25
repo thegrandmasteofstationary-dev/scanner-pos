@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="FASTER.png">
+    <link rel="icon" type="image/png" href="logo.png">
     <title>Toko Faster's Scanning System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,8 +33,38 @@
                 linear-gradient(rgba(91, 110, 61, 0.07) 50%, transparent 50%);
             background-size: 40px 40px;
         }
-        
-        /* Container Utama */
+
+        .navbar {
+            background-color: var(--primary-green);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 3rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .navbar .logo-area img {
+            height: 45px;
+            width: 45px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .navbar .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.05rem;
+            transition: opacity 0.2s;
+        }
+
+        .navbar .nav-links a:hover { opacity: 0.8; }
+
         .wrapper {
             flex: 1;
             display: flex;
@@ -57,7 +87,6 @@
             box-sizing: border-box;
         }
 
-        /* Status Badge */
         .status-badge {
             position: absolute;
             top: -15px;
@@ -77,7 +106,6 @@
             border-color: #fecaca;
         }
 
-        /* SISI KIRI */
         .left-panel {
             display: flex;
             flex-direction: column;
@@ -139,7 +167,6 @@
 
         .scan-btn:hover { background-color: #4a5a32; }
 
-        /* FITUR BARU: MANUAL SEARCH UI */
         .search-container {
             position: relative;
             margin-top: 1rem;
@@ -189,7 +216,6 @@
         .dropdown-item:last-child { border-bottom: none; }
         .dropdown-item:hover { background-color: var(--light-green); }
 
-        /* SISI KANAN */
         .right-panel {
             display: flex;
             flex-direction: column;
@@ -256,7 +282,6 @@
             padding: 4rem 0;
         }
 
-        /* FLOATING FOOTER */
         .floating-footer {
             position: fixed; 
             bottom: 1rem; 
@@ -279,6 +304,18 @@
     </style>
 </head>
 <body>
+
+<div class="navbar">
+    <div class="logo-area">
+        <img src="logo.png" alt="Logo Toko Faster">
+    </div>
+    <div class="nav-links">
+        <a href="#">Home</a>
+        <a href="#">Cashier</a>
+        <a href="#">Inspect</a>
+    </div>
+</div>
+
 <div class="wrapper">
     <div class="main-card">
         <div id="status" class="status-badge offline">Menghubungkan...</div>
@@ -290,13 +327,12 @@
             
             <textarea id="scanInput" class="scanner-box" placeholder="KLIK DI SINI / LANGSUNG SCAN BARCODE BARANG..."></textarea>
             
-            <div class="search-container">
-                <input type="text" id="nameSearch" class="manual-search-input" placeholder="Ketik nama barang..." autocomplete="off">
-                <div id="dropdownList" class="dropdown-content">
-                </div>
-            </div>
-
             <button class="scan-btn" id="manualScanBtn">Scan</button>
+
+            <div class="search-container">
+                <input type="text" id="nameSearch" class="manual-search-input" placeholder="🔍 Atau ketik nama barang manual (Just in case)..." autocomplete="off">
+                <div id="dropdownList" class="dropdown-content"></div>
+            </div>
         </div>
 
         <div class="right-panel">
@@ -339,7 +375,7 @@
 </div>
 
 <script>
-    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqFjmQEMLJl-UhiBkV6hDmVePKMGhWgUkwqPWiUOcv6YeBjX9-mw75au_WztJIkcbwr0D2hcDAGZrw/pub?gid=0&single=true&output=csv";
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqFjmQEMLJl-UhiBkV6hDmVePKMGhWgUkwqPWiUOcv6YeBjX9-mw75au_WztJIkcbwr0D2hcDAGZrw/pub?gid=1746227063&single=true&output=csv";
     
     let inventoryData = [];
 
@@ -367,11 +403,31 @@
     const idleMsg = document.getElementById('idleMsg');
     const manualBtn = document.getElementById('manualScanBtn');
     
-    // Variabel untuk Search Manual
     const nameSearch = document.getElementById('nameSearch');
     const dropdown = document.getElementById('dropdownList');
 
-    // LOGIKA SEARCH BARANG MANUAL
+    // FUNGSI UTAMA PENAMPIL UI (Dipakai oleh Scanner dan Search Manual)
+    function showResultUI(productRow, isJamak, barcodeText) {
+        idleMsg.style.display = 'none';
+        displayArea.style.display = 'block';
+        
+        document.getElementById('pName').innerText = productRow[2]; // Nama Produk
+        document.getElementById('pCode').innerText = "KODE BARCODE: " + barcodeText;
+
+        // Reset highlight
+        document.querySelectorAll('.display-box').forEach(box => box.classList.remove('active-scan'));
+
+        if (isJamak) {
+            fillPrice("Grosir 1", productRow[6], "Grosir 2", productRow[8], "Eceran 1", productRow[10], "Eceran 2", productRow[12]);
+        } else {
+            fillPrice("Eceran 1", productRow[10], "Eceran 2", productRow[12], "Grosir 1", productRow[6], "Grosir 2", productRow[8]);
+        }
+        
+        document.getElementById('val1').parentElement.classList.add('active-scan');
+        document.getElementById('val2').parentElement.classList.add('active-scan');
+    }
+
+    // LISTENER SEARCH MANUAL
     nameSearch.addEventListener('input', function() {
         const val = this.value.toLowerCase().trim();
         dropdown.innerHTML = '';
@@ -381,8 +437,6 @@
             return;
         }
         
-        // Filter array data berdasarkan Kolom C (Nama Produk, Index [2])
-        // Ambil maksimal 6 hasil saja agar dropdown tidak kepanjangan
         const matches = inventoryData.filter(row => row[2] && row[2].toLowerCase().includes(val)).slice(0, 6);
         
         if (matches.length > 0) {
@@ -390,17 +444,15 @@
             matches.forEach(match => {
                 const div = document.createElement('div');
                 div.className = 'dropdown-item';
-                div.innerText = match[2]; // Tampilkan nama barang
+                div.innerText = match[2];
                 
                 div.onclick = () => {
-                    // Coba ambil kode tunggal dulu, kalau tidak ada pakai kode jamak
-                    const targetBarcode = String(match[4] || match[3] || '').trim();
-                    if(targetBarcode) {
-                        searchProduct(targetBarcode);
-                    } else {
-                        alert("Maaf, barang ini belum memiliki barcode di database!");
-                    }
-                    // Reset kolom pencarian setelah diklik
+                    // Ambil barcode kalau ada, kalau kosong tampilin "-"
+                    const barcodeDisplay = String(match[4] || match[3] || '-').trim();
+                    
+                    // Langsung tampilkan UI dengan prioritas layout eceran (isJamak = false)
+                    showResultUI(match, false, barcodeDisplay || '-');
+                    
                     nameSearch.value = '';
                     dropdown.style.display = 'none';
                 };
@@ -411,14 +463,13 @@
         }
     });
 
-    // Menutup dropdown kalau user klik di luar area
     document.addEventListener('click', function(e) {
         if(e.target !== nameSearch && !e.target.classList.contains('dropdown-item')) {
             dropdown.style.display = 'none';
         }
     });
 
-    // SISTEM SCAN BARCODE
+    // LISTENER SCANNER BARCODE
     inputField.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -450,25 +501,8 @@
         );
 
         if (productRow) {
-            idleMsg.style.display = 'none';
-            displayArea.style.display = 'block';
-            
-            document.getElementById('pName').innerText = productRow[2];
-            document.getElementById('pCode').innerText = "KODE BARCODE: " + barcode;
-
             const isJamak = productRow[3] && String(productRow[3]).trim() === barcode;
-
-            removeHighlights();
-
-            if (isJamak) {
-                fillPrice("Grosir 1", productRow[6], "Grosir 2", productRow[8], "Eceran 1", productRow[10], "Eceran 2", productRow[12]);
-                document.getElementById('val1').parentElement.classList.add('active-scan');
-                document.getElementById('val2').parentElement.classList.add('active-scan');
-            } else {
-                fillPrice("Eceran 1", productRow[10], "Eceran 2", productRow[12], "Grosir 1", productRow[6], "Grosir 2", productRow[8]);
-                document.getElementById('val1').parentElement.classList.add('active-scan');
-                document.getElementById('val2').parentElement.classList.add('active-scan');
-            }
+            showResultUI(productRow, isJamak, barcode);
         } else {
             alert("Kode (" + barcode + ") tidak terdaftar di database Toko Faster.");
         }
@@ -485,11 +519,6 @@
         document.getElementById('val4').innerText = formatRupiah(v4);
     }
 
-    function removeHighlights() {
-        const boxes = document.querySelectorAll('.display-box');
-        boxes.forEach(box => box.classList.remove('active-scan'));
-    }
-
     function formatRupiah(angka) {
         if (angka === undefined || angka === null || angka === "") return "Rp-";
         let strAngka = String(angka).replace(/[^0-9]/g, '');
@@ -497,8 +526,6 @@
         return "Rp" + strAngka.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
-    // PERBAIKAN AUTO-FOCUS LOCK:
-    // Mencegah kursor lompat ke scanner box saat user sedang klik kolom search manual
     document.addEventListener('click', (e) => {
         if(e.target !== manualBtn && e.target !== nameSearch && !e.target.classList.contains('dropdown-item')) {
             inputField.focus();
