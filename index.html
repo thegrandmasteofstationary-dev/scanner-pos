@@ -27,12 +27,44 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-
-            /* PURE CSS GINGHAM BACKGROUND */
-            background-color: #dbe4c6; 
+            background-color: #f4f7f0;
             background-image: 
-                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255, 255, 255, 0.4) 40px, rgba(255, 255, 255, 0.4) 80px),
-                repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255, 255, 255, 0.4) 40px, rgba(255, 255, 255, 0.4) 80px);
+                linear-gradient(90deg, rgba(91, 110, 61, 0.07) 50%, transparent 50%),
+                linear-gradient(rgba(91, 110, 61, 0.07) 50%, transparent 50%);
+            background-size: 40px 40px;
+        }
+
+        /* Navbar Atas */
+        .navbar {
+            background-color: var(--primary-green);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 3rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .navbar .logo-area img {
+            height: 45px;
+            width: 45px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .navbar .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.05rem;
+            transition: opacity 0.2s;
+        }
+
+        .navbar .nav-links a:hover { opacity: 0.8; }
 
         /* Container Utama */
         .wrapper {
@@ -110,8 +142,6 @@
             border: 2px solid var(--primary-green);
             border-radius: 12px;
             background-color: #ffffff;
-            
-            /* Setting ini untuk bikin teks di dalam form benar-benar di tengah */
             padding: 90px 20px 20px 20px;
             font-size: 1.4rem;
             font-weight: 700;
@@ -123,9 +153,7 @@
             transition: box-shadow 0.2s;
         }
 
-        .scanner-box:focus {
-            box-shadow: 0 0 0 4px rgba(91, 110, 61, 0.2);
-        }
+        .scanner-box:focus { box-shadow: 0 0 0 4px rgba(91, 110, 61, 0.2); }
 
         .scan-btn {
             font-family: 'Inter', sans-serif;
@@ -136,14 +164,62 @@
             border-radius: 12px;
             font-size: 1.1rem;
             font-weight: 700;
-            margin-top: 1.5rem;
+            margin-top: 1rem;
             cursor: pointer;
             transition: background-color 0.2s;
         }
 
-        .scan-btn:hover {
-            background-color: #4a5a32;
+        .scan-btn:hover { background-color: #4a5a32; }
+
+        /* FITUR BARU: MANUAL SEARCH UI */
+        .search-container {
+            position: relative;
+            margin-top: 1rem;
         }
+
+        .manual-search-input {
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            padding: 0.8rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .manual-search-input:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(91, 110, 61, 0.1);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            margin-top: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown-item {
+            padding: 0.8rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover { background-color: var(--light-green); }
 
         /* SISI KANAN */
         .right-panel {
@@ -162,9 +238,7 @@
             letter-spacing: -0.01em;
         }
 
-        .price-row {
-            margin-bottom: 1.2rem;
-        }
+        .price-row { margin-bottom: 1.2rem; }
 
         .price-row.half {
             display: grid;
@@ -222,7 +296,6 @@
             transform: translateX(-50%); 
             z-index: 50; 
             pointer-events: none; 
-            
             background-color: rgba(91, 110, 61, 0.85); 
             color: #ffffff; 
             padding: 0.5rem 1.5rem; 
@@ -230,7 +303,6 @@
             font-weight: 700; 
             font-size: 0.875rem; 
             letter-spacing: 0.05em; 
-            
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
@@ -239,6 +311,18 @@
     </style>
 </head>
 <body>
+
+<div class="navbar">
+    <div class="logo-area">
+        <img src="FASTER.png" alt="Logo Toko Faster">
+    </div>
+    <div class="nav-links">
+        <a href="#">Home</a>
+        <a href="#">Cashier</a>
+        <a href="#">Inspect</a>
+    </div>
+</div>
+
 <div class="wrapper">
     <div class="main-card">
         <div id="status" class="status-badge offline">Menghubungkan...</div>
@@ -251,6 +335,12 @@
             <textarea id="scanInput" class="scanner-box" placeholder="KLIK DI SINI / LANGSUNG SCAN BARCODE BARANG..."></textarea>
             
             <button class="scan-btn" id="manualScanBtn">Scan</button>
+
+            <div class="search-container">
+                <input type="text" id="nameSearch" class="manual-search-input" placeholder="🔍 Atau ketik nama barang manual (Just in case)..." autocomplete="off">
+                <div id="dropdownList" class="dropdown-content">
+                    </div>
+            </div>
         </div>
 
         <div class="right-panel">
@@ -293,20 +383,17 @@
 </div>
 
 <script>
-    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqFjmQEMLJl-UhiBkV6hDmVePKMGhWgUkwqPWiUOcv6YeBjX9-mw75au_WztJIkcbwr0D2hcDAGZrw/pub?gid=0&single=true&output=csv";
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqFjmQEMLJl-UhiBkV6hDmVePKMGhWgUkwqPWiUOcv6YeBjX9-mw75au_WztJIkcbwr0D2hcDAGZrw/pub?gid=1746227063&single=true&output=csv";
     
-    // Data sekarang disimpan dalam format Array murni (Bukan Object Key)
     let inventoryData = [];
 
     function initApp() {
         Papa.parse(CSV_URL, {
             download: true,
-            header: false, // <-- UBAH KE FALSE: Agar terhindar dari error cell merge di google sheets
+            header: false, 
             skipEmptyLines: true,
             complete: function(results) {
-                // Membuang baris ke-0 (Nama-nama Header) karena kita hanya butuh datanya saja
                 inventoryData = results.data.slice(1);
-                
                 const statusBadge = document.getElementById('status');
                 statusBadge.innerText = "✅ DATABASE POS ONLINE: " + inventoryData.length + " ITEM";
                 statusBadge.classList.remove('offline');
@@ -323,7 +410,59 @@
     const displayArea = document.getElementById('resultDisplay');
     const idleMsg = document.getElementById('idleMsg');
     const manualBtn = document.getElementById('manualScanBtn');
+    
+    // Variabel untuk Search Manual
+    const nameSearch = document.getElementById('nameSearch');
+    const dropdown = document.getElementById('dropdownList');
 
+    // LOGIKA SEARCH BARANG MANUAL
+    nameSearch.addEventListener('input', function() {
+        const val = this.value.toLowerCase().trim();
+        dropdown.innerHTML = '';
+        
+        if (!val) {
+            dropdown.style.display = 'none';
+            return;
+        }
+        
+        // Filter array data berdasarkan Kolom C (Nama Produk, Index [2])
+        // Ambil maksimal 6 hasil saja agar dropdown tidak kepanjangan
+        const matches = inventoryData.filter(row => row[2] && row[2].toLowerCase().includes(val)).slice(0, 6);
+        
+        if (matches.length > 0) {
+            dropdown.style.display = 'block';
+            matches.forEach(match => {
+                const div = document.createElement('div');
+                div.className = 'dropdown-item';
+                div.innerText = match[2]; // Tampilkan nama barang
+                
+                div.onclick = () => {
+                    // Coba ambil kode tunggal dulu, kalau tidak ada pakai kode jamak
+                    const targetBarcode = String(match[4] || match[3] || '').trim();
+                    if(targetBarcode) {
+                        searchProduct(targetBarcode);
+                    } else {
+                        alert("Maaf, barang ini belum memiliki barcode di database!");
+                    }
+                    // Reset kolom pencarian setelah diklik
+                    nameSearch.value = '';
+                    dropdown.style.display = 'none';
+                };
+                dropdown.appendChild(div);
+            });
+        } else {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    // Menutup dropdown kalau user klik di luar area
+    document.addEventListener('click', function(e) {
+        if(e.target !== nameSearch && !e.target.classList.contains('dropdown-item')) {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    // SISTEM SCAN BARCODE
     inputField.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -349,9 +488,6 @@
             return;
         }
 
-        // CARI BARCODE DI INDEX ARRAY: 
-        // Index [3] = Kolom D (Kode Jamak)
-        // Index [4] = Kolom E (Kode Tunggal)
         const productRow = inventoryData.find(row => 
             (row[3] && String(row[3]).trim() === barcode) || 
             (row[4] && String(row[4]).trim() === barcode)
@@ -361,7 +497,6 @@
             idleMsg.style.display = 'none';
             displayArea.style.display = 'block';
             
-            // Index [2] = Kolom C (Nama Produk)
             document.getElementById('pName').innerText = productRow[2];
             document.getElementById('pCode').innerText = "KODE BARCODE: " + barcode;
 
@@ -369,26 +504,12 @@
 
             removeHighlights();
 
-            // RUMUS MAPPING KE DATABASE SPREADSHEET TOKO FASTER:
-            // productRow[6]  -> Kolom G (Grosir 1)
-            // productRow[8]  -> Kolom I (Grosir 2)
-            // productRow[10] -> Kolom K (Eceran 1)
-            // productRow[12] -> Kolom M (Eceran 2)
-
             if (isJamak) {
-                fillPrice("Grosir 1", productRow[6], 
-                          "Grosir 2", productRow[8], 
-                          "Eceran 1", productRow[10], 
-                          "Eceran 2", productRow[12]);
-                
+                fillPrice("Grosir 1", productRow[6], "Grosir 2", productRow[8], "Eceran 1", productRow[10], "Eceran 2", productRow[12]);
                 document.getElementById('val1').parentElement.classList.add('active-scan');
                 document.getElementById('val2').parentElement.classList.add('active-scan');
             } else {
-                fillPrice("Eceran 1", productRow[10], 
-                          "Eceran 2", productRow[12], 
-                          "Grosir 1", productRow[6], 
-                          "Grosir 2", productRow[8]);
-                
+                fillPrice("Eceran 1", productRow[10], "Eceran 2", productRow[12], "Grosir 1", productRow[6], "Grosir 2", productRow[8]);
                 document.getElementById('val1').parentElement.classList.add('active-scan');
                 document.getElementById('val2').parentElement.classList.add('active-scan');
             }
@@ -420,8 +541,10 @@
         return "Rp" + strAngka.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
+    // PERBAIKAN AUTO-FOCUS LOCK:
+    // Mencegah kursor lompat ke scanner box saat user sedang klik kolom search manual
     document.addEventListener('click', (e) => {
-        if(e.target !== manualBtn) {
+        if(e.target !== manualBtn && e.target !== nameSearch && !e.target.classList.contains('dropdown-item')) {
             inputField.focus();
         }
     });
